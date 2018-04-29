@@ -140,7 +140,7 @@ if __name__ == '__main__':
 	# s.showImage('left')
 	s.rightshift()
 	print ("done")
-	cv2.imwrite("test12.jpg", s.leftImage)
+	cv2.imwrite("stitched_image.jpg", s.leftImage)
 	print ("image written")
 	cv2.destroyAllWindows()
 	
