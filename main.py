@@ -8,20 +8,20 @@ class Stitch:
 	def __init__(self, args):
 		self.path = args
 		fp = open(self.path, 'r')
-		filenames = [each.rstrip('\r\n') for each in  fp.readlines()]
+		filenames = [each.rstrip('\r\n') for each in  fp.readlines()] # read each line to get filenames
 		print (filenames)
-		self.images = [cv2.resize(cv2.imread(each),(480, 320)) for each in filenames]
-		self.count = len(self.images)
+		self.images = [cv2.resize(cv2.imread(each),(480, 320)) for each in filenames] #resize images to the same width and length
+		self.count = len(self.images) #count number of imaages
 		self.left_list, self.right_list, self.center_im = [], [],None
-		self.matcher_obj = matchers()
+		self.matcher_obj = matchers() # call matchers as a subclass
 		self.prepare_lists()
 
 	def prepare_lists(self):
 		print ("Number of images : %d"%self.count)
 		self.centerIdx = int(self.count/2) 
 		print ("Center index image : %d"%self.centerIdx)
-		self.center_im = self.images[self.centerIdx]
-		for i in range(self.count):
+		self.center_im = self.images[self.centerIdx] #decide the center image
+		for i in range(self.count): # according number to set left and right list
 			if(i<=self.centerIdx):
 				self.left_list.append(self.images[i])
 			else:
@@ -32,7 +32,7 @@ class Stitch:
 		#self.left_list = reversed(self.left_list)
 		a = self.left_list[0]
 		for b in self.left_list[1:]:
-			H = self.matcher_obj.match(a, b, 'left')
+			H = self.matcher_obj.match(a, b, 'left') #compute the homography of the two images
 			print ("Homography is : ", H)
 			xh = np.linalg.inv(H)
 			print ("Inverse Homography :", xh)
@@ -59,7 +59,7 @@ class Stitch:
 		
 	def rightshift(self):
 		for each in self.right_list:
-			H = self.matcher_obj.match(self.leftImage, each, 'right')
+			H = self.matcher_obj.match(self.leftImage, each, 'right')#compute the homography of the two images
 			print ("Homography :", H)
 			txyz = np.dot(H, np.array([each.shape[1], each.shape[0], 1]))
 			txyz = txyz/txyz[-1]
